@@ -1,0 +1,72 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <script type="text/javascript" src="@{js/jquery.min.js}"></script>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!--设置页面的宽度随着使用者的设备变化二变化 -->
+    <meta name="viewport" content="width=device-width,initial-scal=1">
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-horizontal" method="post" th:action="@{/customer/addCustomer}">
+                <!-- 表单区域-->
+                <fieldset>
+                    <!--表单主题-->
+                    <legend>用户注册，一个手机号只能注册一名用户</legend>
+                    <!--如果msg的值为空则不显示消息-->
+                    <p style="color: red" th:text="${msg}" th:if="${not #strings.isEmpty(msg)}"></p>
+                    <!-- 每一个form-group都可以自定义布局-->
+                    <div class="form-group">
+                        <!-- label表示文字提示标签,可以通过表单的组建的id提示-->
+                        <label class="col-md-2 control-label" for="name">用户名称</label>
+                        <div class="col-md-4">
+                            <input class="form-control" id="name" type="text" name="name"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- label表示文字提示标签,可以通过表单的组建的id提示-->
+                        <label class="col-md-2 control-label" for="phone">手机号</label>
+                        <div class="col-md-4">
+                            <input class="form-control" id="phone" type="tel" name="phone"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <!-- label表示文字提示标签,可以通过表单的组建的id提示-->
+                        <label class="col-md-2 control-label" for="password">用户密码</label>
+                        <div class="col-md-4">
+                            <input class="form-control" id="password" type="password" name="password"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2" for="regionId">所在城镇</label>
+                        <div class="col-md-4">
+                            <select id="regionId" class="form-control" name="regionId">
+                                <option value="1">太平镇</option>
+                                <option value="2">神岗镇</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- label表示文字提示标签,可以通过表单的组建的id提示-->
+                        <label class="col-md-2 control-label" for="address">具体地址</label>
+                        <div class="col-md-4">
+                            <input class="form-control" id="address" type="text" name="address"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-6 col-md-offset-3">
+                            <input class="btn btn-primary" type="submit" value="提交"/>
+                            <input class="btn btn-warning" type="reset" value="重置"/>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

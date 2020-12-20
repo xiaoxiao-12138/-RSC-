@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.express.mapper.PostmanMapper">
+
+    <!--自定义映射实体类-->
+    <resultMap id="getPostmanInfoMap" type="com.springboot.express.entity.PostmanInfo">
+        <!--收件员-->
+        <association property="postman" javaType="com.springboot.express.entity.Postman">
+            <id property="id" column="pid"/>
+            <result property="name" column="pname"/>
+            <result property="phone" column="pphone"/>
+
+        </association>
+
+        <!--出勤-->
+        <association property="attendance" javaType="com.springboot.express.entity.Attendance">
+            <id property="id" column="atid"/>
+            <result property="duty" column="duty"/>
+            <result property="leaves" column="leaves"/>
+            <result property="overtime" column="overtime"/>
+            <result property="vacation" column="vacation"/>
+            <result property="month" column="amonth"/>
+            <result property="year" column="ayear"/>
+
+        </association>
+        <!--工作量-->
+        <association property="workload" javaType="com.springboot.express.entity.Workload">
+            <id property="id" column="wid"/>
+            <result property="receiveWorkload" column="receive_workload"/>
+            <result property="assignWorkload" column="assign_workload"/>
+            <result property="receiveFault" column="receive_fault"/>
+            <result property="assignFault" column="assign_fault"/>
+        </association>
+
+        <!--工资情况-->
+        <association property="salary" javaType="com.springboot.express.entity.Salary">
+            <id property="id" column="sid"/>
+            <result property="month" column="smonth"/>
+            <result property="basic" column="basic"/>
+            <result property="assessment" column="assessment"/>
+            <result property="total" column="total"/>
+        </association>
+    </resultMap>
+
+   <select id="getAllPostmans" resultType="com.springboot.express.entity.Postman">
+            select * from postman;
+     </select>
+
+    <!--查询所以邮递员信息-->
+    <select id="getPostmanInfo" resultMap="getPostmanInfoMap">
+
+       select p.id pid,p.name pname,p.phone pphone,
+       a.id aid, a.duty,a.leaves,a.overtime ,a.vacation,a.month amonth,a.year ayear,
+       w.receive_workload,w.assign_workload,w.receive_fault,w.assign_fault,w.id,
+       s.id sid, s.month smonth, s.basic , s.assessment, s.total
+       from postman p
+       join Salary s on p.id=s.pid
+       join (select id,
+        pid,year,month, sum(receive_workload) receive_workload,sum(assign_workload) assign_workload, sum(receive_fault) receive_fault, sum(assign_fault) assign_fault from workload group by pid,year,month) w on s.pid=w.pid and s.year=w.year and s.month=w.month
+       join (select id,pid, year,month, sum(duty) duty, sum(leaves) leaves,sum(overtime) overtime,sum(vacation) vacation from attendance group by pid,year,month) a on w.pid=a.pid and  a.year=w.year and a.month=w.month ;
+
+   </select>
+
+   <!--查询单个邮递员信息-->
+    <select id="getOnePostmanInfo" resultMap="getPostmanInfoMap">
+
+        select p.id pid,p.name pname,p.phone pphone,
+          a.id aid, a.duty,a.leaves,a.overtime ,a.vacation,a.month amonth,a.year ayear,
+          w.receive_workload,w.assign_workload,w.receive_fault,w.assign_fault,w.id,
+          s.id sid, s.month smonth, s.basic , s.assessment, s.total
+          from postman p
+          join Salary s on p.id=s.pid
+          join (select id,
+           pid,year,month, sum(receive_workload) receive_workload,sum(assign_workload) assign_workload, sum(receive_fault) receive_fault, sum(assign_fault) assign_fault from workload group by pid,year,month) w on s.pid=w.pid and s.year=w.year and s.month=w.month
+          join (select id,pid, year,month, sum(duty) duty, sum(leaves) leaves,sum(overtime) overtime,sum(vacation) vacation from attendance group by pid,year,month) a on w.pid=a.pid and  a.year=w.year and a.month=w.month
+           where p.id=#{pid} and a.year=#{year} ;
+
+      </select>
+
+      <select id="getOnePostmanInfobyNameandMonth" resultMap="getPostmanInfoMap">
+
+        select p.id pid,p.name pname,p.phone pphone,
+          a.id aid, a.duty,a.leaves,a.overtime ,a.vacation,a.month amonth,a.year ayear,
+          w.receive_workload,w.assign_workload,w.receive_fault,w.assign_fault,w.id,
+          s.id sid, s.month smonth, s.basic , s.assessment, s.total
+          from postman p
+          join Salary s on p.id=s.pid
+          join (select id,
+           pid,year,month, sum(receive_workload) receive_workload,sum(assign_workload) assign_workload, sum(receive_fault) receive_fault, sum(assign_fault) assign_fault from workload group by pid,year,month) w on s.pid=w.pid and s.year=w.year and s.month=w.month
+          join (select id,pid, year,month, sum(duty) duty, sum(leaves) leaves,sum(overtime) overtime,sum(vacation) vacation from attendance group by pid,year,month) a on w.pid=a.pid and  a.year=w.year and a.month=w.month
+          where p.id=#{pid} and a.month=#{month} and a.year=#{year} ;
+
+      </select>
+
+    <resultMap id="getAllPostmanMap" type="com.springboot.express.entity.Postman">
+        <id property="id" column="id"/>
+        <result property="phone" column="phone"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="regionId" column="region_id"/>
+    </resultMap>
+
+    <select id="getAllPostman" resultMap="getAllPostmanMap">
+        select * from postman pr join attendance a on pr.id=a.pid where a.duty=1 and pr.region_id=#{arg0} and a.day=#{arg1};
+    </select>
+</mapper>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<!--Sparkline Charts Needed Scripts-->
+<script src="assets/js/charts/sparkline/jquery.sparkline.js"></script>
+<script src="assets/js/charts/sparkline/sparkline-init.js"></script>
+
+<!--Easy Pie Charts Needed Scripts-->
+<script src="assets/js/charts/easypiechart/jquery.easypiechart.js"></script>
+<script src="assets/js/charts/easypiechart/easypiechart-init.js"></script>
+
+<!--Page Related Scripts-->
+<script src="assets/js/charts/flot/jquery.flot.js"></script>
+<script src="assets/js/charts/flot/jquery.flot.orderBars.js"></script>
+<script src="assets/js/charts/flot/jquery.flot.tooltip.js"></script>
+<script src="assets/js/charts/flot/jquery.flot.resize.js"></script>
+<script src="assets/js/charts/flot/jquery.flot.selection.js"></script>
+<script src="assets/js/charts/flot/jquery.flot.crosshair.js"></script>
+<script src="assets/js/charts/flot/jquery.flot.stack.js"></script>
+<script src="assets/js/charts/flot/jquery.flot.time.js"></script>
+<script src="assets/js/charts/flot/jquery.flot.pie.js"></script>
+<script src="assets/js/charts/flot/flot-init.js"></script>
+<body>
+<div class="col-xs-12 col-md-12 col-lg-12">
+    <div class="col-xs-6">
+        <div class="widget">
+            <div class="widget-header">
+                <span id="clientTotal" class="widget-caption"
+                      style="font-size:25px;font-weight:bold;color:black"></span>
+            </div>
+            <div class="widget-body">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="selectable-charts" class="chart chart-lg"
+                             style="padding: 0px; position: relative;"></div>
+
+                    </div>
+                    <!--<div class="row">
+                    <div class="col-sm-12">
+                    <div class="col-sm-12 col-md-6">
+                    <button class="btn btn-default" id="setSelection">Select year 1994</button>
+                    <button class="btn btn-default" id="clearSelection">Clear selection</button>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                    <div class="pull-right">
+                    <label><input id="zoom" type="checkbox" />Zoom to selection</label>
+                    </div>
+                    </div>
+                    </div>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="dashboard-box">
+            <div class="box-header">
+                <div id="customerTotal" class="deadline" style="font-size:15px;font-weight:bold;">
+
+                </div>
+            </div>
+            <div class="box-tabbs">
+                <div class="tabbable">
+                    <ul class="nav nav-tabs tabs-flat nav-justified" id="myTab11">
+                        <li class="active">
+                            <a data-toggle="tab" href="#visits" style="font-size:25px;font-weight:bold;">
+                                本月拜访量趋势图
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content tabs-flat no-padding">
+                        <div id="visits" class="tab-pane active animated fadeInUp">
+                            <div class="row">
+                                <div class="col-lg-12 chart-container">
+                                    <div id="dashboard-chart-visits" class="chart chart-lg no-margin"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+$(window).bind("load", function () {
+/*Sets Themed Colors Based on Themes*/
+themeprimary = getThemeColorFromCss('themeprimary');
+themesecondary = getThemeColorFromCss('themesecondary');
+themethirdcolor = getThemeColorFromCss('themethirdcolor');
+themefourthcolor = getThemeColorFromCss('themefourthcolor');
+themefifthcolor = getThemeColorFromCss('themefifthcolor');
+
+//Sets The Hidden Chart Width
+$('#dashboard-bandwidth-chart')
+.data('width', $('.box-tabbs')
+.width() - 30);
+
+//------------------------------Visit Chart------------------------------------------------//
+var username = $("#username").val();
+var status = $("#type").val();
+var d = new Date()
+var vYear = d.getFullYear()
+var vMon = d.getMonth() + 1
+var vDay = d.getDate()
+var day = new Date(vYear,vMon,0);
+var lastdate = day.getDate();
+s=vYear+'-'+(vMon<10 ? "0" + vMon : vMon)+'-'+'01'+' 00:00:00,'+vYear+'-'+(vMon<10 ? "0" + vMon : vMon)+'-'+lastdate+'
+23:59:59';
+$.ajax({
+url: "../clientVisit",
+async:false,
+type: 'post',
+data: {'username':username,'time':s,'status':status},
+success: function(data1){
+var data3 = $.parseJSON(data1);
+var data2 = [{
+color: themeprimary,
+label: "拜访次数",
+data:data3,
+bars: {
+order: 1,
+align: "center",
+show: true,
+borderWidth: 0,
+barWidth: 0.2,
+lineWidth: .4,
+fillColor: {
+colors: [{
+opacity: 0.4
+}, {
+opacity: 1
+}]
+}
+}
+},
+{
+color: themethirdcolor,
+label: "拜访次数",
+data: data3,
+lines: {
+show: true,
+fill: false,
+fillColor: {
+colors: [{
+opacity: 0.3
+}, {
+opacity: 0
+}]
+}
+},
+points: {
+show: true
+}
+}];
+var options = {
+legend: {
+show: false
+},
+xaxis: {
+tickDecimals: 0,
+position: "bottom",
+color: '#f3f3f3',
+align: "center",
+tickWidth: 5
+},
+yaxis: {
+min: 0,
+color: '#f3f3f3',
+tickFormatter: function (val, axis) {
+return "";
+},
+},
+grid: {
+hoverable: true,
+clickable: false,
+borderWidth: 0,
+aboveData: false,
+color: '#fbfbfb'
+
+},
+tooltip: true,
+tooltipOpts: {
+defaultTheme: false,
+content: " <b>%x 日</b> , <b>%s</b> : <span>%y</span>",
+}
+};
+var placeholder = $("#dashboard-chart-visits");
+var plot = $.plot(placeholder, data2, options);
+
+},
+error: function(data) {
+}
+});
+$.ajax({
+url: "clientManage",
+async:false,
+cache: false,
+type: 'post',
+data: {'username':username,'time':s,'status':status},
+success: function(data1){
+var data = $.parseJSON(data1);
+var lskh3 = $.parseJSON(data);
+var data5 = [{
+color: themeprimary,
+label: "意向客户",
+data: yxkh3
+},
+{
+color: themethirdcolor,
+label: "签约客户",
+data: qykh3
+},
+{
+color: themesecondary,
+label: "长尾客户",
+data: cwkh3
+},
+{
+color: themefourthcolor,
+label: "流失客户",
+data: lskh3
+}];
+var options = {
+series: {
+lines: {
+show: true
+},
+points: {
+show: true
+}
+},
+legend: {
+noColumns: 4
+},
+xaxis: {
+tickDecimals: 0,
+color: gridbordercolor
+},
+yaxis: {
+min: 0,
+color: gridbordercolor
+},
+selection: {
+mode: "x"
+},
+grid: {
+hoverable: true,
+clickable: false,
+borderWidth: 0,
+aboveData: false
+},
+tooltip: true,
+tooltipOpts: {
+defaultTheme: false,
+content: "<b>%s</b> : <span>%x 日</span> : <span>%y 人</span>",
+},
+crosshair: {
+mode: "x"
+}
+};
+
+var placeholder = $("#selectable-charts");
+placeholder.bind("plotselected", function (event, ranges) {
+
+var zoom = $("#zoom").is(":checked");
+
+if (zoom) {
+plot = $.plot(placeholder, data, $.extend(true, {}, options, {
+xaxis: {
+min: ranges.xaxis.from,
+max: ranges.xaxis.to
+}
+}));
+}
+});
+placeholder.bind("plotunselected", function (event) {
+});
+var plot = $.plot(placeholder, data5, options);
+
+},
+error: function(data) {
+}
+});
+InitiateEasyPieChart.init();
+InitiateSparklineCharts.init();
+InitiateFlotSelectableChart.init();
+});
+</script>
+</html>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.express.mapper.MailMapper">
+
+    <resultMap id="getAllMailVOMap" type="com.springboot.express.entity.MailVO">
+        <!--Mail父类属性-->
+        <id property="id" column="id"/>
+        <result property="addresseeName" column="addressee_name"/>
+        <result property="addresseePhone" column="addressee_phone"/>
+        <result property="address" column="address"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="receiveRid" column="receive_rid"/>
+        <result property="assignRid" column="assign_rid"/>
+        <result property="receivePid" column="receive_pid"/>
+        <result property="assignPid" column="assign_pid"/>
+        <result property="receiveState" column="receive_state"/>
+        <result property="assignState" column="assign_state"/>
+        <result property="receiveFrequency" column="receive_frequency"/>
+        <result property="assignFrequency" column="assign_frequency"/>
+        <result property="reason" column="reason"/>
+        <result property="createTime" column="create_time"/>
+        <result property="receiveTime" column="receive_time"/>
+        <result property="assignTime" column="assign_time"/>
+        <result property="deleteState" column="delete_state"/>
+        <result property="distributeReceiveTime" column="distribute_receive_time"/>
+        <result property="distributeAssignTime" column="distribute_assign_time"/>
+        <!--MailVO子类属性-->
+        <result property="customerName" column="customerName"/>
+        <result property="customerPhone" column="customerPhone"/>
+        <result property="receiveRegionName" column="receiveRegionName"/>
+        <result property="assignRegionName" column="assignRegionName"/>
+        <result property="receivePostmanName" column="receivePostmanName"/>
+        <result property="assignPostmanName" column="assignPostmanName"/>
+        <result property="receiveStateName" column="receiveStateName"/>
+        <result property="assignStateName" column="assignStateName"/>
+    </resultMap>
+
+
+    <select id="getAllMailVO" resultMap="getAllMailVOMap">
+        SELECT m.*,c.name customerName,c.phone customerPhone,c.address customerAddress,rr.region receiveRegionName,ra.region assignRegionName,pr.name receivePostmanName,
+        pa.name assignPostmanName,msr.state receiveStateName,msa.state assignStateName FROM mail m JOIN customer c ON m.customer_id=c.id JOIN
+        region rr ON m.receive_rid=rr.id JOIN region ra ON m.assign_rid=ra.id JOIN postman pr ON m.receive_pid=pr.id JOIN postman pa ON
+        m.assign_pid=pa.id JOIN mail_state msr ON m.receive_state=msr.id JOIN mail_state msa ON m.assign_state=msa.id
+    </select>
+
+    <select id="getAllMailVoById" resultMap="getAllMailVOMap">
+        SELECT m.*,c.name customerName,c.phone customerPhone,c.address customerAddress,rr.region receiveRegionName,ra.region assignRegionName,pr.name receivePostmanName,
+        pa.name assignPostmanName,msr.state receiveStateName,msa.state assignStateName FROM mail m JOIN customer c ON m.customer_id=c.id JOIN
+        region rr ON m.receive_rid=rr.id JOIN region ra ON m.assign_rid=ra.id JOIN postman pr ON m.receive_pid=pr.id JOIN postman pa ON
+        m.assign_pid=pa.id JOIN mail_state msr ON m.receive_state=msr.id JOIN mail_state msa ON m.assign_state=msa.id where m.id = #{id}
+    </select>
+    
+    <update id="updateReceiveMail" parameterType="com.springboot.express.entity.Mail">
+        update mail set receive_pid=#{receivePid},receive_state=1,distribute_receive_time=#{distributeReceiveTime} where id=#{id}
+    </update>
+
+    <update id="updateAssignMail" parameterType="com.springboot.express.entity.Mail">
+        update mail set assign_pid=#{assignPid},assign_state=1,distribute_assign_time=#{distributeAssignTime} where id=#{id}
+    </update>
+
+</mapper>

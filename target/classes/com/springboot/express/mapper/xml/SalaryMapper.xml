@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.express.mapper.SalaryMapper">
+    <select id="getSalaryByPostmanId" resultType="com.springboot.express.entity.Salary" parameterType="int">
+        select * from salary s where s.pid=#{pid};
+    </select>
+</mapper>

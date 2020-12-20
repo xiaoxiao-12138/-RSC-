@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.express.mapper.WorkloadMapper">
+
+    <select id="getworkloadbyMonth" resultType="com.springboot.express.entity.Workload" >
+        select *  from workload where month=#{month} and year=#{year};
+    </select>
+
+    <select id="getWorkloadVObyMonthforlist" resultType="com.springboot.express.entity.WorkloadVO">
+        select p.name names,month, sum(receive_workload) receiveWorkloads,sum(assign_workload) assignWorkloads,
+        sum(receive_fault) receiveFaults,sum(assign_fault) assignFaults, max(receive_workload+assign_workload) maxWorkloads,
+        min(receive_workload+assign_workload) minWorkloads from workload join postman p on pid = p.id where month = #{month} group by pid;
+    </select>
+    
+</mapper>

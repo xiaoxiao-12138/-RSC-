@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.express.mapper.CustomerMapper">
+    <!--自定义映射实体类-->
+    <resultMap id="getCustomerMailMap" type="com.springboot.express.entity.CustomerVO">
+        <id property="id" column="id"/>
+        <result property="addresseeName" column="addressee_name"/>
+        <result property="addresseePhone" column="addressee_phone"/>
+        <result property="assignRid" column="assign_rid"/>
+        <result property="addresseeAddress" column="address"/>
+        <result property="receiveState" column="receive_state"/>
+        <result property="assignState" column="assign_state"/>
+        <result property="receiveTime" column="receive_time"/>
+        <result property="assignTime" column="assign_time"/>
+        <!--用户-->
+        <association property="customer" javaType="com.springboot.express.entity.Customer">
+            <id property="id" column="cid"/>
+            <result property="name" column="cname"/>
+            <result property="phone" column="cphone"/>
+            <result property="address" column="caddress"/>
+            <result property="regionId" column="cregion_id"/>
+        </association>
+        <!--收件员-->
+        <association property="receivePostman" javaType="com.springboot.express.entity.Postman">
+            <id property="id" column="prid"/>
+            <result property="name" column="prname"/>
+        </association>
+        <!--派件员-->
+        <association property="assignPostman" javaType="com.springboot.express.entity.Postman">
+            <id property="id" column="paid"/>
+            <result property="name" column="paname"/>
+        </association>
+    </resultMap>
+
+    <!--数据库中多个表中有相同字段名，则需要使用到别名-->
+    <select id="getCustomerMail" resultMap="getCustomerMailMap" parameterType="int">
+        select m.*, pr.id prid,pr.name prname,pa.id paid,pa.name paname, c.id cid,c.name cname,c.phone cphone,c.address caddress,c.region_id cregion_id from mail m join customer c on m.customer_id = c.id join postman pr on m.receive_pid = pr.id join postman pa on m.assign_pid = pa.id where c.id = #{id};
+    </select>
+
+   <!-- <select id="getCustomerMail" resultMap="getCustomerMailMap" parameterType="int">
+        select m.*, p.id pid,p.name pname, c.id cid,c.name cname,c.phone cphone,c.address caddress,c.region_id cregion_id from mail m join customer c on m.customer_id = c.id join postman p on m.receive_pid = p.id where c.id = #{id};
+    </select>-->
+
+    <!--<select id="getCustomerMail" resultMap="getCustomerMailMap" parameterType="int">
+        select c.*,m.*,p.* from customer c join mail m on c.id = m.customer_id join postman p on m.receive_pid = p.id where c.id = #{id};
+    </select>-->
+    <!--<select id="getCustomerMail" resultType="com.springboot.express.entity.Customer" parameterType="int">
+        SELECT * FROM customer where id = #{id};
+    </select>-->
+    
+</mapper>
